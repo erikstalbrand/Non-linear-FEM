@@ -235,8 +235,8 @@ for n = 1:path_steps
     %     plotdof_v = dof(9,3);             % Edge node (dispalcement v)
     %     plotdof_u = dof(9,1);             % Edge node (dispalcement u)
         coordUpd = coord;
-    %Draws the structure every 20th step
-    if(mod(n, 20) == 0 && draw == 1 || n ==1)
+    %Draws the structure every 10th step
+    if(mod(n, 10) == 0 && draw == 1 || n ==1)
         for k=1:3
             coordUpd(:,k) = coordUpd(:,k)+a(k:3:(end+k-3));
             pause(0.01)
@@ -246,6 +246,7 @@ for n = 1:path_steps
         clf;
         eldraw3(Exx,Eyy,Ezz,[1 4 1]);
         drawnow;
+        title('Deformed configuration, task 1')
         hold on
     end
 end
@@ -264,6 +265,13 @@ figure(4)
 plot(wplot, vplot);
 xlabel('Displacement w')
 ylabel('Displacement v')
+
+figure(5)
+ed2 = extract(edof, a);
+eldraw3(Ex, Ey, Ez, [1 3 1]);
+hold on
+eldisp3(Ex, Ey, Ez, ed2, [1 4 1], 1)
+legend('Reference configuration')
 
 a1 = a0;
 edof1 = edof;
