@@ -173,7 +173,7 @@ load('plotvariables_ex1.mat');
 figure(2)
 p1 = plot(uplot2, lambdaplot2, 'r');
 hold on
-p2 = plot(uplot, lambdaplot);
+p2 = plot(uplot, lambdaplot, 'b');
 xlabel('Displacement u')
 ylabel('Load parameter, lambda')
 legend([p1 p2], 'Task 2', 'Task 1')
@@ -182,7 +182,7 @@ title('Equilibrium paths')
 figure(3)
 p3 = plot(wplot2, lambdaplot2, 'r');
 hold on
-p4 = plot(wplot, lambdaplot);
+p4 = plot(wplot, lambdaplot, 'b');
 xlabel('Displacement w')
 ylabel('Load parameter, lambda')
 legend([p3 p4], 'Task 2', 'Task 1')
@@ -191,7 +191,7 @@ title('Equilibrium paths')
 figure(4)
 p5 = plot(wplot2, vplot2, 'r');
 hold on
-p6 = plot(wplot, vplot);
+p6 = plot(wplot, vplot, 'b');
 xlabel('Displacement w')
 ylabel('Displacement v')
 legend([p5 p6], 'Task 2', 'Task 1')

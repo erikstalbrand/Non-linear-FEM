@@ -192,9 +192,9 @@ load('plotvariables_ex2.mat');
 
 
 figure(2)
-p1 = plot(uplot3, lambdaplot3, 'r');
+p1 = plot(uplot3, lambdaplot3, 'g');
 hold on
-p2 = plot(uplot2, lambdaplot2);
+p2 = plot(uplot2, lambdaplot2, 'r');
 xlabel('Displacement u')
 ylabel('Load parameter, lambda')
 legend([p1 p2], 'Perturbed system', 'Main path')
@@ -202,18 +202,18 @@ title('Equilibrium paths')
 
 
 figure(3)
-p3 = plot(wplot3, lambdaplot3, 'r');
+p3 = plot(wplot3, lambdaplot3, 'g');
 hold on
-p4 = plot(wplot2, lambdaplot2);
+p4 = plot(wplot2, lambdaplot2, 'r');
 xlabel('Displacement w')
 ylabel('Load parameter, lambda')
 legend([p3 p4], 'Perturbed system', 'Main path')
 title('Equilibrium paths')
 
 figure(4)
-p5 = plot(wplot3, vplot3, 'r');
+p5 = plot(wplot3, vplot3, 'g');
 hold on
-p6 = plot(wplot2, vplot2);
+p6 = plot(wplot2, vplot2, 'r');
 xlabel('Displacement w')
 ylabel('Displacement v')
 legend([p5 p6], 'Perturbed system', 'Main path')
@@ -231,8 +231,8 @@ title('Constrained path-following for non-linear material, perturbed system')
 figure(6)
 ed4 = extract(edof2, a2);
 %eldraw3(Ex, Ey, Ez, [1 4 1]);
-eldisp3(Ex, Ey, Ez, ed2, [1 4 1], 1);
+eldisp3(Ex, Ey, Ez, ed2, [1 2 1], 1);
 hold on
-eldisp3(Ex2, Ey2, Ez2, ed4, [1 2 1], 1);
+eldisp3(Ex2, Ey2, Ez2, ed4, [1 4 1], 1);
 legend('Perturbed system')
 title('Deformed configurations for task 2 and task 3')

@@ -110,9 +110,9 @@ for n = 1:path_steps
         % STRESSES AND STRAINS
         for el = 1:nelm
             ed = extract(edof(el,:), a0);                                 % Element displacement
-            ec = [Ex(el, 1), Ex(el, 2);                         % Element coordinates
-            Ey(el, 1), Ey(el, 2);
-            Ez(el, 1), Ez(el, 2)];
+            ec = [Ex(el, 1), Ex(el, 2);                                 % Element coordinates
+                  Ey(el, 1), Ey(el, 2);
+                  Ez(el, 1), Ez(el, 2)];
             [es, eg] = bar3gs(ec, ed, ep);                                % Normal force es and Green's strain eg
             sg = ep(1)*eg;                                              % Linear relation, sg = green's stress
             
@@ -185,7 +185,7 @@ figure(5)
 ed2 = extract(edof, a);
 eldraw3(Ex, Ey, Ez, [1 2 1]);
 hold on
-eldisp3(Ex, Ey, Ez, ed2, [1 4 1], 1)
+eldisp3(Ex, Ey, Ez, ed2, [1 5 1], 1)
 legend('Reference configuration')
 title('Reference and deformed configuration')
 

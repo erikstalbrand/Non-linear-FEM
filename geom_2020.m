@@ -69,3 +69,5 @@ Edof=edof;
 
 % truss properties
 ep=[1 1];
+
+save('geom_2020.mat', 'x1', 'coord', 'dof', 'edof', 'Ex', 'Ey', 'Ez', 'bc', 'ndof', 'nelm', 'P', 'plotdof_w', 'plotdof_v', 'plotdof_u', 'Edof', 'ep');

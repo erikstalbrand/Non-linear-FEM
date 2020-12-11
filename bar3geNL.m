@@ -15,6 +15,5 @@ A = ep(2);
 I = eye(3);
 
 Ke = (Et*A/(l0^3))*[dx*dx' -dx*dx'; -dx*dx' dx*dx'] + es/l0*[I -I; -I I];
-
 end
 

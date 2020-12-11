@@ -1,5 +1,4 @@
 function [Ke] = bar3ge(ec, ed, ep, es)
-
 x_0 = ec(:, 2)-ec(:, 1);
 l0 = norm(x_0);
 

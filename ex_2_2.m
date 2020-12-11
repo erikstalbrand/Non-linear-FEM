@@ -77,9 +77,9 @@ for n = 1:load_steps
         f_int = f_int*0;
         
         for el = 1:nelm
-           ec = [coord(Enod(el, 1), :); coord(Enod(el, 2), :)]';         % Coordinates fo each element
+           ec = [coord(Enod(el, 1), :); coord(Enod(el, 2), :)]';        % Coordinates fo each element
            ed = extract(Edof(el,:), a);                                 % Element displacement
-           eds = extract(Edof_spring(el,:), a);                  % Spring displacement
+           eds = extract(Edof_spring(el,:), a);                         % Spring displacement
            [es, eg] = bar3gs(ec, ed, ep);                               % Normal force es and Green's strain eg
            
            Ke = bar3ge(ec, ed, ep, es);                                 % Element stiffness matrix
