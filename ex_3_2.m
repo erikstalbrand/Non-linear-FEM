@@ -3,7 +3,7 @@ clear;
 clc;
 close all;
 
-load_steps = 110;
+load_steps = 100;
 res = zeros(3, 1);
 dS = 0.001;
 S = zeros(3, 1);
@@ -16,7 +16,7 @@ E = 1;
 mpara = [E, v];
 e1 = 0;
 e2 = 0;
-TOL = 1E-5;
+TOL = 1E-6;
 
 S_plot = zeros(load_steps, 1);
 e1_plot = zeros(load_steps, 1);
@@ -37,7 +37,6 @@ for n = 1:load_steps
     
     M = stressMater2D1(1, mpara, defgrad);      % Spänningen vi har
     res = S - M;                                % Felet som uppstår
-    %res = res*0;
     
     iter = 1;
     while norm(res) > TOL || iter == 1
@@ -55,12 +54,11 @@ for n = 1:load_steps
         
         M = stressMater2D1(1, mpara, defgrad);      % Ny spänning
         
-        %---------------------------------
-        sigma = stressMater2D1(2, mpara, defgrad);   % FEL I LÖSNIINGEN? DE HAR tau OCH INTE sigma, dvs. flag == 2 istället för flag == 3
-        %---------------------------------
+
         res = S - M;
         iter = 2;
     end
+    sigma = stressMater2D1(3, mpara, defgrad);
     e1 = defgrad(1) - 1;
     e2 = defgrad(4) - 1;
     
@@ -93,9 +91,9 @@ legend([p3 p4], 'S_{11}', '\sigma_{11}')
 
 %% Exercise 3.2, Neo-Hookean Model
 
-load_steps = 1000;
+load_steps = 100;
 res = zeros(3, 1);
-dS = 0.0001;
+dS = 0.001;
 S = zeros(3, 1);
 M = zeros(3, 1);
 C = zeros(3);
@@ -106,7 +104,7 @@ E = 1;
 mpara = [E, v];
 e1 = 0;
 e2 = 0;
-TOL = 1E-5;
+TOL = 1E-6;
 
 S_plot = zeros(load_steps, 1);
 e1_plot = zeros(load_steps, 1);
@@ -147,13 +145,11 @@ for n = 1:load_steps
         
         M = stressMater2D2(1, mpara, defgrad);          % Ny spänning
         
-        %---------------------------------
-        sigma = stressMater2D2(2,mpara,defgrad);        % FEL I LÖSNIINGEN? DE HAR tau OCH INTE sigma, dvs. flag == 2 istället för flag == 3
         
-        %---------------------------------
         res = S - M;
         iter = 2;
     end
+    sigma = stressMater2D2(3,mpara,defgrad);
     e1 = defgrad(1) - 1;
     e2 = defgrad(4) - 1;
     

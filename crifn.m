@@ -2,10 +2,8 @@
 clear;
 close all;
 clc;
-
 load('geom_2020.mat')
 %--------------------------------------------------------------%
-
 path_steps = 100;
 da_r = zeros(ndof, 1);
 da_tot = zeros(ndof, 1);
@@ -28,7 +26,6 @@ vplot2 = zeros(path_steps, 1);
 wplot2 = zeros(path_steps, 1);
 
 draw = 1;
-
 for n = 1:path_steps
     disp(['Path Step: ', num2str(abs(n))]);
     
@@ -56,7 +53,7 @@ for n = 1:path_steps
             
             lambdaNL = stretch1D(ec, ed);           % Stretch
             sg = stress1D(ep, lambdaNL);
-            [es, eg] = bar3gsNL(ec, ed, ep, sg);                      % Normal force es and Green's strain eg
+            es = ep(2)*sg;              % Normal force es
             Et = dmat1D(ep, lambdaNL);              % Non-linear element stiffness
             
             Ke = bar3geNL(ec, ed, ep, es, Et);                        % Element stiffness matrix
@@ -101,27 +98,24 @@ for n = 1:path_steps
             else
                 break;          % If complex dlambda, reduce l and restart
             end
-            
         end
         
         lambda0 = lambda0 + dlambda;
-        
         da = da_r + dlambda*da_p;       % Displacement increment
         a0 = a0 + da;
-        
         
         % STRESSES AND STRAINS
         for el = 1:nelm
             ed = extract(edof(el,:), a0);       % Element displacement
-            ec = [Ex(el, 1), Ex(el, 2);             % Element coordinates
+            ec = [Ex(el, 1), Ex(el, 2);         % Element coordinates
                   Ey(el, 1), Ey(el, 2);
                   Ez(el, 1), Ez(el, 2)];
             
             lambdaNL = stretch1D(ec, ed);       % Stretch
             sg = stress1D(ep, lambdaNL);
-            [es, eg] = bar3gsNL(ec, ed, ep, sg);     % Normal force es and Green's strain eg
+            es = ep(2)*sg;                      % Normal force es
             
-            indx_el = edof(el, 2:end);     % Dof for element
+            indx_el = edof(el, 2:end);          % Dof for element
             
             % Internal element force vectors
             fe = bar3gf(ec, es, ed);
@@ -164,7 +158,6 @@ for n = 1:path_steps
         drawnow;
         title('Deformed configuration task 2')
         hold on
-        
     end
 end
 
@@ -175,8 +168,8 @@ p1 = plot(uplot2, lambdaplot2, 'r');
 hold on
 p2 = plot(uplot, lambdaplot, 'b');
 xlabel('Displacement u')
-ylabel('Load parameter, lambda')
-legend([p1 p2], 'Task 2', 'Task 1')
+ylabel('Load parameter, \lambda')
+legend([p1 p2], 'Non-linear elastic material model', 'Linear elastic material model')
 title('Equilibrium paths')
 
 figure(3)
@@ -184,8 +177,8 @@ p3 = plot(wplot2, lambdaplot2, 'r');
 hold on
 p4 = plot(wplot, lambdaplot, 'b');
 xlabel('Displacement w')
-ylabel('Load parameter, lambda')
-legend([p3 p4], 'Task 2', 'Task 1')
+ylabel('Load parameter, \lambda')
+legend([p3 p4], 'Non-linear elastic material model', 'Linear elastic material model')
 title('Equilibrium paths')
 
 figure(4)
@@ -194,7 +187,7 @@ hold on
 p6 = plot(wplot, vplot, 'b');
 xlabel('Displacement w')
 ylabel('Displacement v')
-legend([p5 p6], 'Task 2', 'Task 1')
+legend([p5 p6], 'Non-linear elastic material model', 'Linear elastic material model')
 title('Equilibrium paths')
 
 figure(5)
@@ -208,16 +201,16 @@ title('Constrained path-following for non-linear material')
 figure(6)
 ed3 = extract(edof1, a1);
 %eldraw3(Ex, Ey, Ez, [1 4 1]);
-eldisp3(Ex, Ey, Ez, ed2, [1 4 1], 1);
+eldisp3(Ex, Ey, Ez, ed2, [1 2 1], 1);
 hold on
-eldisp3(Ex1, Ey1, Ez1, ed3, [1 2 1], 1);
-legend('Task 2')
-title('Deformed configuration for task 1 and task 2')
+eldisp3(Ex1, Ey1, Ez1, ed3, [1 4 1], 1);
+legend('Non-linear elastic material model')
+title('Deformed configuration for the linear and non-linear elastic material model')
 
 Ex2 = Ex;
 Ey2 = Ey;
 Ez2 = Ez;
-a2 = a0;
+a_2 = a0;
 edof2 = edof;
 
-save('plotvariables_ex2.mat', 'uplot2', 'vplot2', 'wplot2', 'lambdaplot2', 'Ex2', 'Ey2', 'Ez2', 'a2', 'edof2');
+save('plotvariables_ex2.mat', 'uplot2', 'vplot2', 'wplot2', 'lambdaplot2', 'Ex2', 'Ey2', 'Ez2', 'a_2', 'edof2');

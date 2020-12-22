@@ -5,7 +5,6 @@ clc;
 
 load('geometry_E41.mat');
 
-
 % material parameters
 E = 210E3;
 v = 0.3;

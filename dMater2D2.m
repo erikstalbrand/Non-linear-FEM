@@ -1,36 +1,65 @@
 function [D] = dMater2D2(flag,mpara,defgrad) %Neo-Hookean Model
 
-F = [defgrad(1) defgrad(2) 0;
-     defgrad(3) defgrad(4) 0;
-        0          0       1];                              % 1 is (1,1), 4 is (2,2), 2 is (1,2), 3 is (2,1)
+E=mpara(1);
+v=mpara(2);
 
+F = [defgrad(1), defgrad(2), 0;
+     defgrad(3), defgrad(4), 0;
+     0         ,     0     , 1];
+
+ J=det(F);   %Jacobian
+
+%Shear modulus
+k = E/(3*(1-2*v));
+
+%Shear modulus
+mu = E/(2*(1+v));
+
+%Greens strain
 C = F'*F;
-mu = mpara(1)/(2*(1+mpara(2)));
-% I_1C = C(1, 1) + C(2, 2) + C(3, 3);
+Cinv=inv(C);
+trC = C(1,1)+C(2,2)+C(3,3);
 
-k = mpara(1)/(3*(1-2*mpara(2)));
-J = det(F);
+%Invariants a1,a2,a3
 
-%S = k/2*(J^2-1)*inv(C)+mu*J^(-2/3)*(I-I_1C/3*inv(C));
+a1 = k*J^2+2*mu/9*J^-(2/3)*trC;
+a2 = 2*mu/3*J^-(2/3);
+a3 = mu/3*J^-(2/3)*trC-k/2*(J^2-1);
 
-c = inv(C);
+%Kroneckers delta
+d=[1,0;
+   0,1];
 
-a1 = k*J^2+2*mu/9*J^(-2/3)*(C(1, 1) + C(2, 2) + C(3, 3));
-a2 = 2*mu/3*J^(-2/3);
-a3 = mu/3*J^(-2/3)*(C(1, 1) + C(2, 2) + C(3, 3)) - k/2*(J^2-1);
+D_func_tl=@(I,J,K,L) 0;
 
-D_1111 = a1*(c(1, 1)*c(1, 1)) - a2*(c(1, 1)+c(1, 1)) + a3*((c(1, 1)*c(1, 1)) + (c(1, 1)*c(1, 1)));
-D_1122 = a1*(c(1, 1)*c(2, 2)) - a2*(c(2, 2)+c(1, 1)) + a3*((c(1, 2)*c(1, 2)) + (c(1, 2)*c(1, 2)));
-D_1112 = a1*(c(1, 1)*c(1, 2)) - a2*(c(1, 2)+ 0)      + a3*(c(1, 1)*c(1, 2) + (c(1, 2)*c(1, 1)));
-D_2211 = a1*(c(2, 2)*c(1, 1)) - a2*(c(1, 1)+c(2, 2)) + a3*((c(2, 1)*c(2, 1)) + (c(2, 1)*c(2, 1)));
-D_2222 = a1*(c(2, 2)*c(2, 2)) - a2*(c(2, 2)+c(2, 2)) + a3*((c(2, 2)*c(2, 2)) + (c(2, 2)*c(2, 2)));
-D_2212 = a1*(c(2, 2)*c(1, 2)) - a2*(c(1, 2)+ 0)      + a3*((c(2, 1)*c(2, 2)) + (c(2, 2)*c(2, 1)));
-D_1211 = a1*(c(1, 2)*c(1, 1)) - a2*(0 + c(1, 2))     + a3*((c(1, 1)*c(2, 1)) + (c(1, 1)*c(2, 1)));
-D_1222 = a1*(c(1, 2)*c(2, 2)) - a2*(0 + c(1, 2))     + a3*((c(1, 2)*c(2, 2)) + (c(1, 2)*c(2, 2)));
-D_1212 = a1*(c(1, 2)*c(1, 2)) - a2*(0 + 0)           + a3*(c(1, 1)*c(2, 2) + (c(1, 2)*c(1, 2)));
+D_func_tl = @(I,J,K,L) D_func_tl(I,J,K,L) + a1*Cinv(I,J)*Cinv(K,L)-a2*(d(I,J)*Cinv(K,L)+Cinv(I,J)*d(K,L))+a3*(Cinv(I,K)*Cinv(J,L)+Cinv(I,L)*Cinv(J,K));
 
-D = [D_1111 D_1122 D_1112;
-    D_2211 D_2222 D_2212;
-    D_1211 D_1222 D_1212];
+if flag == 1
+
+  D = [D_func_tl(1,1,1,1),D_func_tl(1,1,2,2),D_func_tl(1,1,1,2);
+       D_func_tl(2,2,1,1),D_func_tl(2,2,2,2),D_func_tl(2,2,1,2);
+       D_func_tl(1,2,1,1),D_func_tl(1,2,2,2),D_func_tl(1,2,1,2)];
+    
+end
+if flag==2
+    F = [defgrad(1),defgrad(2),0;
+         defgrad(3),defgrad(4),0;
+             0     ,     0    ,1];
+
+    D_ul_func= @(i,j,k,l) 0;
+
+    for I=1:2
+        for J=1:2
+            for K=1:2
+                for L=1:2
+                    D_ul_func = @(i,j,k,l) D_ul_func(i,j,k,l) + (1/det(F))*F(i,I)*F(j,J)*D_func_tl(I,J,K,L)*F(k,K)*F(l,L);
+                end
+            end
+        end
+    end
+    D  =  [D_ul_func(1,1,1,1),D_ul_func(1,1,2,2),D_ul_func(1,1,1,2);
+           D_ul_func(2,2,1,1),D_ul_func(2,2,2,2),D_ul_func(2,2,1,2);
+           D_ul_func(1,2,1,1),D_ul_func(1,2,2,2),D_ul_func(1,2,1,2)];
+end
 end
 

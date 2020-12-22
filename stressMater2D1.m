@@ -18,9 +18,7 @@ if flag == 1                                                % Second Piola Kirch
     
 else if flag == 2                                           % Kirchoff stress, tau
         stress = [tau(1, 1) tau(2, 2) tau(1, 2)]';
-        %stress = tau;       % modified
     else                                                    % Cauchy stress, sigma
-        
         stress = [tau(1, 1) tau(2, 2) tau(1, 2)]'/J;
     end
 end

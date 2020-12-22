@@ -6,10 +6,8 @@ clc;
 
 v = 0.3;
 E = 1;
-
 mpara = [E, v];
-flag = [1 2 3];
-% defgrad = F;
+% flag = [1 2 3];
 tau12_plot = zeros(100, 1);
 tau22_plot = zeros(100, 1);
 sigma12_plot = zeros(100, 1);

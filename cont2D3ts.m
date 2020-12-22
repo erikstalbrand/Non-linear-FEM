@@ -1,4 +1,4 @@
-function [defgrad] = cont2D3ts(ec,ed)
+function [defgrad] = cont2D3ts(ec, ed)
 
 C = [1           1        1;
       ec(1, 1) ec(1, 2) ec(1, 3);

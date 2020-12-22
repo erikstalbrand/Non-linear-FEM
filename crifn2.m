@@ -1,14 +1,13 @@
 %% Project 1, Exercise 3, crifn2; introduce 2 perturbations
-
 clear;
 close all;
 clc;
-
 load('geom_2020.mat')
+
 % Coordinates
 x1=1.697;
 coord=[-x1 -1 0  %1 node number
-    0.2  -1 0  %2                     % Introduce perturbation in geometry, X-coord changed from 0 to 0.2
+    0  -1 0  %2
     x1 -1 0  %3
     -x1  1 0  %4
     0   1 0  %5
@@ -17,10 +16,12 @@ coord=[-x1 -1 0  %1 node number
     0   0 1  %8
     x1  0 1];%9
 
+coord(2, 1) = 0.2;      % Introduce perturbation in geometry, X-coord changed from 0 to 0.2 for node 2
+[Ex,Ey,Ez]=coordxtr(edof,coord,dof,2);
+
  % External load increment
 P = zeros(ndof,1);
-P([dof(7,3) dof(8,3) dof(9,3) dof(7,1)]) = -0.03*[1.5 1 1.5 0.4];        % Introduce perturbation in load, added force in u-dir on node 7
-
+P([dof(7,3) dof(8,3) dof(9,3) dof(9,1)]) = -0.03*[1.5 1 1.5 0.4];        % Introduce perturbation in load, added force in u-dir on node 9
 %--------------------------------------------------------------%
 
 path_steps = 100;
@@ -32,7 +33,7 @@ dlambda = 0;
 dlambda_tot = 0;
 a = zeros(ndof, 1);             % Global displacement vector
 l = 0.1;                        % Sphere radius
-TOL = 1E-5;                     % Convergence criteria
+TOL = 1E-6;                     % Convergence criteria
 psi = 1;
 
 K = zeros(ndof, ndof);          % Global stiffness matrix
@@ -44,9 +45,7 @@ uplot3 = zeros(path_steps, 1);
 vplot3 = zeros(path_steps, 1);
 wplot3 = zeros(path_steps, 1);
 
-
 draw = 1;
-
 for n = 1:path_steps
     disp(['Path Step: ', num2str(abs(n))]);
     
@@ -68,18 +67,20 @@ for n = 1:path_steps
         
         for el = 1:nelm
             ec = [Ex(el, 1), Ex(el, 2);             % Element coordinates
-                Ey(el, 1), Ey(el, 2);
-                Ez(el, 1), Ez(el, 2)];
+                  Ey(el, 1), Ey(el, 2);
+                  Ez(el, 1), Ez(el, 2)];
             ed = extract(edof(el, :), a0);          % Element displacements
             
             lambdaNL = stretch1D(ec, ed);           % Stretch
             sg = stress1D(ep, lambdaNL);
-            [es, eg] = bar3gsNL(ec, ed, ep, sg);                      % Normal force es and Green's strain eg
+            es = ep(2)*sg;                          % Normal force es
+            
             Et = dmat1D(ep, lambdaNL);              % Non-linear element stiffness
             
-            Ke = bar3geNL(ec, ed, ep, es, Et);                        % Element stiffness matrix
+            Ke = bar3geNL(ec, ed, ep, es, Et);      % Element stiffness matrix
             
-            indx_el = Edof(el, 2:end);                          % Dof for element
+            indx_el = Edof(el, 2:end);              % Dof for element
+            
             % Assemble stiffness matrix
             K(indx_el, indx_el) = K(indx_el, indx_el) + Ke;
         end
@@ -91,13 +92,13 @@ for n = 1:path_steps
         dlambda_tot = lambda0 - lambda;
         
         % Load parameter
-        if iter == 1            % The first iteration we need to calculate dlambda differently
+        if iter == 1        % The first iteration we need to calculate dlambda differently
             if n > 1
-                da_n = a - a_old;     % Increment between the last two converged equilibrium points
+                da_n = a - a_old;       % Increment between the last two converged equilibrium points
                 s = sign(da_n'*da_p);
                 dlambda = s*(l/sqrt(da_p'*da_p + psi*(P')*P));
             else
-                dlambda = l/sqrt(da_p'*da_p + psi*(P')*P);     % s = 1 in first iteration
+                dlambda = l/sqrt(da_p'*da_p + psi*(P')*P);      % s = 1 in first iteration
             end
         else
             % Load parameter
@@ -119,27 +120,24 @@ for n = 1:path_steps
             else
                 break;          % If complex dlambda, reduce l and restart
             end
-            
         end
         
         lambda0 = lambda0 + dlambda;
-        
         da = da_r + dlambda*da_p;       % Displacement increment
         a0 = a0 + da;
         
-        
         % STRESSES AND STRAINS
         for el = 1:nelm
-            ed = extract(edof(el,:), a0);        % Element displacement
-            ec = [Ex(el, 1), Ex(el, 2);             % Element coordinates
+            ed = extract(edof(el,:), a0);            % Element displacement
+            ec = [Ex(el, 1), Ex(el, 2);              % Element coordinates
                   Ey(el, 1), Ey(el, 2);
                   Ez(el, 1), Ez(el, 2)];
             
             lambdaNL = stretch1D(ec, ed);
             sg = stress1D(ep, lambdaNL);
-            [es, eg] = bar3gsNL(ec, ed, ep, sg);     % Normal force es and Green's strain eg
+            es = ep(2)*sg;                           % Normal force es
             
-            indx_el = edof(el, 2:end);      % Dof for element
+            indx_el = edof(el, 2:end);               % Dof for element
             
             % Internal element force vectors
             fe = bar3gf(ec, es, ed);
@@ -156,13 +154,11 @@ for n = 1:path_steps
         
         res(bc(:,1)) = 0;
         iter = 2;
-        
     end
     % Accept quantities
     a_old = a;
     a = a0;
     lambda = lambda0;
-    
     lambdaplot3(n) = lambda;
     
     uplot3(n) = a(plotdof_u);
@@ -184,29 +180,26 @@ for n = 1:path_steps
         drawnow;
         title('Deformed configuration perturbed system')
         hold on
-        
     end
 end
 
 load('plotvariables_ex2.mat');
-
 
 figure(2)
 p1 = plot(uplot3, lambdaplot3, 'g');
 hold on
 p2 = plot(uplot2, lambdaplot2, 'r');
 xlabel('Displacement u')
-ylabel('Load parameter, lambda')
+ylabel('Load parameter, \lambda')
 legend([p1 p2], 'Perturbed system', 'Main path')
 title('Equilibrium paths')
-
 
 figure(3)
 p3 = plot(wplot3, lambdaplot3, 'g');
 hold on
 p4 = plot(wplot2, lambdaplot2, 'r');
 xlabel('Displacement w')
-ylabel('Load parameter, lambda')
+ylabel('Load parameter, \lambda')
 legend([p3 p4], 'Perturbed system', 'Main path')
 title('Equilibrium paths')
 
@@ -227,12 +220,10 @@ eldisp3(Ex, Ey, Ez, ed2, [1 2 1], 1);
 legend('Reference configuration')
 title('Constrained path-following for non-linear material, perturbed system')
 
-
 figure(6)
-ed4 = extract(edof2, a2);
-%eldraw3(Ex, Ey, Ez, [1 4 1]);
+ed4 = extract(edof2, a_2);
 eldisp3(Ex, Ey, Ez, ed2, [1 2 1], 1);
 hold on
 eldisp3(Ex2, Ey2, Ez2, ed4, [1 4 1], 1);
 legend('Perturbed system')
-title('Deformed configurations for task 2 and task 3')
+title('Deformed configurations for the non-linear elastic material model with and without perturbation')

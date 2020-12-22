@@ -2,10 +2,8 @@
 clear;
 close all;
 clc;
-
 load('geom_2020.mat')
 %--------------------------------------------------------------%
-
 path_steps = 100;
 da_r = zeros(ndof, 1);
 da_tot = zeros(ndof, 1);
@@ -28,7 +26,6 @@ vplot = zeros(path_steps, 1);
 wplot = zeros(path_steps, 1);
 
 draw = 1;
-
 for n = 1:path_steps
     disp(['Path Step: ', num2str(abs(n))]);
     
@@ -102,10 +99,8 @@ for n = 1:path_steps
         
         % Update lambda
         lambda0 = lambda0 + dlambda;
-        
         da = da_r + dlambda*da_p;       % Displacement increment
         a0 = a0 + da;
-        
         
         % STRESSES AND STRAINS
         for el = 1:nelm
@@ -133,7 +128,6 @@ for n = 1:path_steps
         
         res(bc(:,1)) = 0;
         iter = 2;
-        
     end
     % Accept quantities
     a_old = a;
@@ -166,13 +160,13 @@ end
 figure(2)
 plot(uplot, lambdaplot);
 xlabel('Displacement u')
-ylabel('Load parameter, lambda')
+ylabel('Load parameter, \lambda')
 title('Equilibrium path')
 
 figure(3)
 plot(wplot, lambdaplot);
 xlabel('Displacement w')
-ylabel('Load parameter, lambda')
+ylabel('Load parameter, \lambda')
 title('Equilibrium path')
 
 figure(4)

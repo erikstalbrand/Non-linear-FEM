@@ -1,13 +1,10 @@
 %% Exercise 4.1 b) newrap
-
 clear;
 clc;
 close all;
 
 load('data.mat');
 
-% data_4_1;
-% t = 1;
 load_steps = 100;
 TOL = 1E-6;
 
@@ -91,9 +88,13 @@ figure(1)
 eldraw2(ex, ey, [1 2 1])
 hold on
 eldisp2(ex, ey, ed, [1,4,1], 1);
+title('Original(green) and deformed mesh(red)');
+xlabel('[mm]')
+ylabel('[mm]')
 
 figure(2)
 plot(disp_plot, force_plot);
 xlim([0 100]);
+title('Force-displacement curve');
 xlabel('Displacement [mm]')
 ylabel('Internal force [N]')

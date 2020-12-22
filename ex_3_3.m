@@ -5,16 +5,10 @@ clc;
 close all;
 
 load_steps = 100;
-res = zeros(3, 1);
 dtau = [0;
         0;
         0.001];
 tau = zeros(3, 1);
-N = zeros(3, 1);
-
-% F = zeros(3);
-dF = zeros(3);
-Kt = zeros(3);
 
 v = 0.3;
 E = 1;
@@ -22,7 +16,7 @@ mpara = [E, v];
 
 F12 = 0;
 F21 = 0;
-TOL = 1E-4;
+TOL = 1E-6;
 
 tau_plot = zeros(load_steps, 1);
 F_plot = zeros(load_steps, 1);
@@ -89,7 +83,7 @@ end
 figure(1)
 p1 = plot(F_plot, tau_plot);
 xlabel('F_{12}');
-ylabel('\tau_{12}/E and \sigma_{12}/E')
+ylabel('\tau_{12} and \sigma_{12}')
 title('St. Venant-Kirchhoff Model')
 hold on
 grid on
@@ -104,10 +98,6 @@ dtau = [0;
         0;
         0.001];
 tau = zeros(3, 1);
-N = zeros(3, 1);
-
-dF = zeros(3);
-Kt = zeros(3);
 
 v = 0.3;
 E = 1;
@@ -115,7 +105,7 @@ mpara = [E, v];
 
 F12 = 0;
 F21 = 0;
-TOL = 1E-4;
+TOL = 1E-6;
 
 tau_plot = zeros(load_steps, 1);
 F_plot = zeros(load_steps, 1);
@@ -182,7 +172,7 @@ end
 figure(2)
 p3 = plot(F_plot, tau_plot);
 xlabel('F_{12}');
-ylabel('\tau_{12}/E and \sigma_{12}/E')
+ylabel('\tau_{12} and \sigma_{12}')
 title('Neo-Hookean Model')
 hold on
 grid on
